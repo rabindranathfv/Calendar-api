@@ -2,6 +2,7 @@ const { response, request } = require('express');
 const bcrypt = require('bcryptjs');
 
 const User = require('../models/users');
+const { generateJWT } = require('../helpers/jwt');
 
 const createUser = async(req = request, res = response, next) => {
 
@@ -24,13 +25,15 @@ const createUser = async(req = request, res = response, next) => {
 
     await newUser.save();
 
+    const token = await generateJWT(user.id, user.name);
+
     res.status(201).json({
       ok: true,
       msg: 'register succesfully',
       uid: newUser.id,
       name,
       email,
-      password
+      token
     })
 
   } catch (error) {
@@ -47,7 +50,6 @@ const loginUser = async(req = request, res = response, next) => {
   const { email, password } = req.body;
   try {
     const user = await User.findOne({ email });
-    console.log("🚀 ~ file: auth.controller.js ~ line 50 ~ loginUser ~ user", user)
 
     if (!user) {
       return res.status(400).json({
@@ -65,11 +67,17 @@ const loginUser = async(req = request, res = response, next) => {
       })
     }
 
+    const token = await generateJWT(user.id, user.name);
+
     res.json({
       ok: true,
       msg: 'Login successfully',
-      email
+      uid: user.id,
+      name: user.name,
+      email,
+      token
     })
+
   } catch (error) {
     console.log(error);
     res.status(500).json({
