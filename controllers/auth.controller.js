@@ -13,11 +13,15 @@ const createUser = async(req = request, res = response, next) => {
     if (user) {
       return res.status(400).json({
         ok: false,
-        msg: 'there is one user with that email'
+        msg: 'there is one user with that info'
       })
     }
 
     const newUser = new User(req.body);
+
+    const salt = bcrypt.genSaltSync();
+    newUser.password = bcrypt.hashSync( password, salt);
+
     await newUser.save();
 
     res.status(201).json({
@@ -38,21 +42,46 @@ const createUser = async(req = request, res = response, next) => {
   }
 }
 
-const loginUser = (req = request, res = response, next) => {
+const loginUser = async(req = request, res = response, next) => {
 
-  console.log("saludos desde el loginUser")
   const { email, password } = req.body;
+  try {
+    const user = await User.findOne({ email });
+    console.log("🚀 ~ file: auth.controller.js ~ line 50 ~ loginUser ~ user", user)
 
-  res.json({
-    ok: true,
-    msg: 'Login successfully',
-    email
-  })
+    if (!user) {
+      return res.status(400).json({
+        ok: false,
+        msg: 'there is one user with that info'
+      })
+    }
+
+    const validPsw = bcrypt.compareSync(password, user.password);
+
+    if ( !validPsw ) {
+      return res.status(400).json({
+        ok: false,
+        msg: 'incorrect password, please check your credentials'
+      })
+    }
+
+    res.json({
+      ok: true,
+      msg: 'Login successfully',
+      email
+    })
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      ok: false,
+      msg: 'Troubles at login'
+    })
+  }
+
 }
 
 const renovalToken = (req = request, res = response, next) => {
 
-  console.log("saludos desde el renovalToken")
   res.json({
     ok: true,
     msg: 'renovalToken succesfully'
