@@ -8,3 +8,4 @@ coverage/
 lcov.info
 package-lock.json
 .nyc_output/
+.env
