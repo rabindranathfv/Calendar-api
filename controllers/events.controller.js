@@ -32,13 +32,13 @@ const createEvent = async(req, res, next) => {
       ok: true,
       msg: 'createEvent succesfully',
       event: newEvent
-    })
+    });
   } catch (error) {
     console.log(error)
     return res.status(500).json({
       ok: false,
       msg: 'Troubles create and Event succesfully'
-    })
+    });
   }
 
 }
@@ -102,12 +102,11 @@ const deleteEvent = async(req, res, next) => {
     if (event.user.toString() !== userId ) {
       return res.status(401).json({
         ok: false,
-        msg: 'this event is not yours, you can not edit this event'
+        msg: 'this event is not yours, you can not delete this event'
       });
     }
 
     const deleteEvent = await Event.findByIdAndDelete( id );
-    console.log("🚀 ~ file: events.controller.js ~ line 109 ~ deleteEvent ~ deleteEvent", deleteEvent)
 
     return res.json({
       ok: true,
