@@ -1,3 +1,4 @@
+const Event = require('../models/events');
 
 const getEvents = (req, res, next) => {
 
@@ -7,13 +8,25 @@ const getEvents = (req, res, next) => {
   })
 }
 
-const createEvent = (req, res, next) => {
-  console.log(req.body)
+const createEvent = async(req, res, next) => {
 
-  res.json({
-    ok: true,
-    msg: 'createEvent succesfully'
-  })
+  try {
+    const newEvent = new Event(req.body);
+    newEvent.user = req.uid;
+    await newEvent.save();
+
+    return res.json({
+      ok: true,
+      msg: 'createEvent succesfully',
+      event: newEvent
+    })
+  } catch (error) {
+    return res.status(500).json({
+      ok: false,
+      msg: 'Troubles create and Event succesfully'
+    })
+  }
+
 }
 
 const updateEvent = (req, res, next) => {

@@ -4,26 +4,32 @@ const { Schema, model} = require('mongoose');
 const EventSchema = Schema({
   title:{
     type: String,
-    requiere: true
+    requiered: true
   },
   notes: {
-    type: String,
-    require: true,
-    unique: true
+    type: String
   },
   start:{
     type: Date,
-    require: true
+    requiered: true
   },
   end:{
     type: Date,
-    require: true
+    requiered: true
   },
   user: {
     // reference another model combine with ref attribute
     type: Schema.Types.ObjectId,
-    ref: 'User'
+    ref: 'User',
+    required: true
   }
 })
+
+// customize Response for endpoint after mongo save instance
+EventSchema.method('toJSON', function() {
+  const { __v, _id, ...object} = this.toObject();
+  object.id = _id;
+  return object;
+});
 
 module.exports = model('Event', EventSchema);
