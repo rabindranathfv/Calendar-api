@@ -1,11 +1,24 @@
+const { model } = require('mongoose');
 const Event = require('../models/events');
 
-const getEvents = (req, res, next) => {
+const getEvents = async(req, res, next) => {
 
-  res.json({
-    ok: true,
-    msg: 'getEvents succesfully'
-  })
+  try {
+    // populate methods allow to bring data for another models, you can lis the attributes
+    const events = await Event.find().populate('user', 'name email');
+
+    return res.json({
+      ok: true,
+      msg: 'getEvents succesfully',
+      events
+    })
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({
+      ok: false,
+      msg: 'Troubles create and Event succesfully'
+    })
+  }
 }
 
 const createEvent = async(req, res, next) => {
@@ -21,6 +34,7 @@ const createEvent = async(req, res, next) => {
       event: newEvent
     })
   } catch (error) {
+    console.log(error)
     return res.status(500).json({
       ok: false,
       msg: 'Troubles create and Event succesfully'
@@ -29,20 +43,85 @@ const createEvent = async(req, res, next) => {
 
 }
 
-const updateEvent = (req, res, next) => {
+const updateEvent = async(req, res, next) => {
 
-  res.json({
-    ok: true,
-    msg: 'updateEvent succesfully'
-  })
+  const id = req.params.id;
+  try {
+    const event = await Event.findById(id);
+    const userId = req.uid;
+
+    if (!event) {
+      return res.status(404).json({
+        ok: false,
+        msg: 'Event does not exist'
+      });
+    }
+
+    if (event.user.toString() !== userId ) {
+      return res.status(401).json({
+        ok: false,
+        msg: 'this event is not yours, you can not edit this event'
+      });
+    }
+
+    const dataEvent = {
+      ...req.body,
+      user: userId
+    }
+
+    // last parameter return the updated instance of the model, if not send the object before upd
+    const updEvent = await Event.findByIdAndUpdate( id, dataEvent, { new: true} )
+
+    return res.json({
+      ok: true,
+      msg: 'updateEvent succesfully',
+      event: updEvent
+    });
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({
+      ok: false,
+      msg: 'Troubles update an Event'
+    });
+  }
 }
 
-const deleteEvent = (req, res, next) => {
+const deleteEvent = async(req, res, next) => {
+  const id = req.params.id;
+  const userId = req.uid;
+  try {
+    const event = await Event.findById(id);
 
-  res.json({
-    ok: true,
-    msg: 'deleteEvent succesfully'
-  })
+    if (!event) {
+      return res.status(404).json({
+        ok: false,
+        msg: 'Event does not exist'
+      });
+    }
+
+    if (event.user.toString() !== userId ) {
+      return res.status(401).json({
+        ok: false,
+        msg: 'this event is not yours, you can not edit this event'
+      });
+    }
+
+    const deleteEvent = await Event.findByIdAndDelete( id );
+    console.log("🚀 ~ file: events.controller.js ~ line 109 ~ deleteEvent ~ deleteEvent", deleteEvent)
+
+    return res.json({
+      ok: true,
+      msg: 'deleteEvent succesfully',
+      id: deleteEvent.id
+    })
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({
+      ok: false,
+      msg: 'Troubles update an Event'
+    });
+  }
+
 }
 
 module.exports = {
