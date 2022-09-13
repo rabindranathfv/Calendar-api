@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs');
 const User = require('../models/users');
 const { generateJWT } = require('../helpers/jwt');
 
-const createUser = async(req = request, res = response, next) => {
+const createUser = async(req = request, res = response) => {
 
   const { name, email, password } = req.body;
 
@@ -45,7 +45,7 @@ const createUser = async(req = request, res = response, next) => {
   }
 }
 
-const loginUser = async(req = request, res = response, next) => {
+const loginUser = async(req = request, res = response) => {
 
   const { email, password } = req.body;
   try {
@@ -88,7 +88,7 @@ const loginUser = async(req = request, res = response, next) => {
 
 }
 
-const renovalToken = async(req = request, res = response, next) => {
+const renovalToken = async(req = request, res = response) => {
 
   const { uid, name } = req;
 

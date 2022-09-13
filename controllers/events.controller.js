@@ -1,7 +1,7 @@
 const { model } = require('mongoose');
 const Event = require('../models/events');
 
-const getEvents = async(req, res, next) => {
+const getEvents = async(req, res) => {
 
   try {
     // populate methods allow to bring data for another models, you can lis the attributes
@@ -21,7 +21,7 @@ const getEvents = async(req, res, next) => {
   }
 }
 
-const createEvent = async(req, res, next) => {
+const createEvent = async(req, res) => {
 
   try {
     const newEvent = new Event(req.body);
@@ -43,7 +43,7 @@ const createEvent = async(req, res, next) => {
 
 }
 
-const updateEvent = async(req, res, next) => {
+const updateEvent = async(req, res) => {
 
   const id = req.params.id;
   try {
@@ -86,7 +86,7 @@ const updateEvent = async(req, res, next) => {
   }
 }
 
-const deleteEvent = async(req, res, next) => {
+const deleteEvent = async(req, res) => {
   const id = req.params.id;
   const userId = req.uid;
   try {
