@@ -14,6 +14,8 @@ app.use( express.static('public'));
 app.set('trust proxy', true);
 app.use(express.json());
 
+app.use(`/api/${process.env.VERSION}/auth`, require('./routes/auth'));
+app.use(`/api/${process.env.VERSION}/events`, require('./routes/events'));
 app.use(`/api/${process.env.VERSION}/`, (req, res) => {
 
   const port = process.env.PORT;
@@ -23,8 +25,6 @@ app.use(`/api/${process.env.VERSION}/`, (req, res) => {
     port
   })
 })
-app.use(`/api/${process.env.VERSION}/auth`, require('./routes/auth'));
-app.use(`/api/${process.env.VERSION}/events`, require('./routes/events'));
 
 app.listen( process.env.PORT, () => {
   console.log(`server up and runing in port ${process.env.PORT}`);
