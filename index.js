@@ -9,7 +9,10 @@ const app = express();
 
 dbConnection();
 
-app.use(cors());
+app.use(cors({
+  allowedHeaders: '*',
+  origin: '*',
+}));
 app.use( express.static('public'));
 app.set('trust proxy', true);
 app.use(express.json());
