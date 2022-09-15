@@ -11,6 +11,8 @@ dbConnection();
 
 app.use(cors({
   allowedHeaders: '*',
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  "preflightContinue": false,
   origin: '*',
 }));
 app.use( express.static('public'));
